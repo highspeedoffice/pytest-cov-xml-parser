@@ -1,93 +1,5 @@
-require('./sourcemap-register.js');module.exports =
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
-
-/***/ 2932:
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const core = __nccwpck_require__(2186);
-const github = __nccwpck_require__(5438)
-const fs = __nccwpck_require__(5747);
-const xml2js = __nccwpck_require__(6189);
-
-function parseIt(file) {
-  try {
-    var parser = new xml2js.Parser();
-    var data = fs.readFileSync(file);
-    let parsed = parser.parseString(data);
-    if (!parsed) {
-      throw{message: 'File is not XML'}
-    }
-    let newMessage = '### :white_check_mark: Result of Pytest Coverage\n'
-    newMessage += '| Name | Cover |\n| :--- | ----: |\n'
-    parser.resultObject.coverage.packages[0].package.forEach((p) => {
-      p.classes[0].class.forEach((c) => {
-        if(c['$']['line-rate'] < 1) {
-          newMessage += `| ${c['$'].filename} | ${Math.round(parseFloat(c['$']['line-rate']) * 100)} |\n`;
-        }
-      });
-    });
-    return newMessage;
-  } catch (error) {
-    throw error
-  }
-}
-
-async function run() {
-  if (github.context.eventName === 'pull_request') {
-    core.info('Comment only will be created on pull requests!')
-    return
-  }
-  try {
-    const file = core.getInput('file');
-    const githubToken = core.getInput('token');
-    if (!fs.existsSync(file)) {
-      throw {message: `File ${file} does not exist`};
-    }
-    let msg = parseIt(file);
-    const context = github.context
-    const pullRequestNumber = context.payload.pull_request?.number
-
-    const octokit = github.getOctokit(githubToken)
-
-    // Now decide if we should issue a new comment or edit an old one
-    const {data: comments} = await octokit.issues.listComments({
-      ...context.repo,
-      issue_number: pullRequestNumber ?? 0
-    })
-
-    const comment = comments.find((comment) => {
-      return (
-        comment.user.login === 'github-actions[bot]' &&
-        comment.body.startsWith(
-          '### :white_check_mark: Result of Pytest Coverage\n'
-        )
-      )
-    })
-
-    if (comment) {
-      await octokit.issues.updateComment({
-        ...context.repo,
-        comment_id: comment.id,
-        body: msg
-      })
-    } else {
-      await octokit.issues.createComment({
-        ...context.repo,
-        issue_number: pullRequestNumber ?? 0,
-        body: msg
-      })
-    }
-  }
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run();
-
-
-/***/ }),
 
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
@@ -12735,8 +12647,9 @@ module.exports = require("zlib");;
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		if(__webpack_module_cache__[moduleId]) {
-/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
@@ -12761,11 +12674,94 @@ module.exports = require("zlib");;
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
-/******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
-/******/ 	// module exports must be returned from runtime so entry inlining is disabled
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(2932);
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+const core = __nccwpck_require__(2186);
+const github = __nccwpck_require__(5438)
+const fs = __nccwpck_require__(5747);
+const xml2js = __nccwpck_require__(6189);
+
+function parseIt(file) {
+  try {
+    var parser = new xml2js.Parser();
+    var data = fs.readFileSync(file);
+    let parsed = parser.parseString(data);
+    if (!parsed) {
+      throw{message: 'File is not XML'}
+    }
+    let newMessage = '### :white_check_mark: Result of Pytest Coverage\n'
+    newMessage += '| Name | Cover |\n| :--- | ----: |\n'
+    parser.resultObject.coverage.packages[0].package.forEach((p) => {
+      p.classes[0].class.forEach((c) => {
+        if(c['$']['line-rate'] < 1) {
+          newMessage += `| ${c['$'].filename} | ${Math.round(parseFloat(c['$']['line-rate']) * 100)} |\n`;
+        }
+      });
+    });
+    return newMessage;
+  } catch (error) {
+    throw error
+  }
+}
+
+async function run() {
+  if (github.context.eventName === 'pull_request') {
+    core.info('Comment only will be created on pull requests!')
+    return
+  }
+  try {
+    const file = core.getInput('file');
+    const githubToken = core.getInput('token');
+    if (!fs.existsSync(file)) {
+      throw {message: `File ${file} does not exist`};
+    }
+    let msg = parseIt(file);
+    const context = github.context
+    const pullRequestNumber = context.payload.pull_request?.number
+
+    const octokit = github.getOctokit(githubToken)
+
+    // Now decide if we should issue a new comment or edit an old one
+    const {data: comments} = await octokit.issues.listComments({
+      ...context.repo,
+      issue_number: pullRequestNumber ?? 0
+    })
+
+    const comment = comments.find((comment) => {
+      return (
+        comment.user.login === 'github-actions[bot]' &&
+        comment.body.startsWith(
+          '### :white_check_mark: Result of Pytest Coverage\n'
+        )
+      )
+    })
+
+    if (comment) {
+      await octokit.issues.updateComment({
+        ...context.repo,
+        comment_id: comment.id,
+        body: msg
+      })
+    } else {
+      await octokit.issues.createComment({
+        ...context.repo,
+        issue_number: pullRequestNumber ?? 0,
+        body: msg
+      })
+    }
+  }
+  catch (error) {
+    core.setFailed(error.message);
+  }
+}
+
+run();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
