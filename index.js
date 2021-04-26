@@ -16,7 +16,7 @@ function parseIt(file) {
   parser.resultObject.coverage.packages[0].package.forEach((p) => {
     p.classes[0].class.forEach((c) => {
       if(c['$']['line-rate'] < 1) {
-        newMessage += `| ${escape(c['$'].filename)} | ${c.lines.length} | ${Math.round(parseFloat(c['$']['line-rate']) * 100)} |\n`;
+        newMessage += `| ${escape(c['$'].filename)} | ${c.lines[0].line.length} | ${Math.round(parseFloat(c['$']['line-rate']) * 100)} |\n`;
       }
     });
   });
