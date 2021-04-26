@@ -27,7 +27,7 @@ function parseIt(file) {
 }
 
 async function run() {
-  if (github.context.eventName === 'pull_request') {
+  if (github.context.eventName !== 'pull_request') {
     core.info('Comment only will be created on pull requests!')
     return
   }
