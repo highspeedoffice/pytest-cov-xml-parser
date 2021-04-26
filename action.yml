@@ -1,13 +1,14 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'pytest-cov XML commenter'
+description: 'Parse pytest-cov XML output and comment to pull request'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  file:
+    description: 'Filename to parse'
     required: true
-    default: '1000'
-outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+    default: 'coverage.xml'
+  token:
+    description: 'GITHUB_TOKEN'
+    required: true
+    default: ${{ github.token }}
 runs:
   using: 'node12'
   main: 'dist/index.js'
