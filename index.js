@@ -1,35 +1,32 @@
 const core = require('@actions/core');
-const github = require('@actions/github')
+const github = require('@actions/github');
 const fs = require('fs');
 const xml2js = require('xml2js');
+var escape = require('markdown-escape');
 
 function parseIt(file) {
-  try {
-    var parser = new xml2js.Parser();
-    var data = fs.readFileSync(file);
-    let parsed = parser.parseString(data);
-    if (!parsed) {
-      throw{message: 'File is not XML'}
-    }
-    let newMessage = '### :white_check_mark: Result of Pytest Coverage\n'
-    newMessage += '| Name | Cover |\n| :--- | ----: |\n'
-    parser.resultObject.coverage.packages[0].package.forEach((p) => {
-      p.classes[0].class.forEach((c) => {
-        if(c['$']['line-rate'] < 1) {
-          newMessage += `| ${c['$'].filename} | ${Math.round(parseFloat(c['$']['line-rate']) * 100)} |\n`;
-        }
-      });
-    });
-    return newMessage;
-  } catch (error) {
-    throw error
+  var parser = new xml2js.Parser();
+  var data = fs.readFileSync(file);
+  let parsed = parser.parseString(data);
+  if (!parsed) {
+    throw{message: 'File is not XML'}
   }
+  let newMessage = '### :white_check_mark: Result of Pytest Coverage\n'
+  newMessage += '| Name | Lines | Coverage (%) |\n| :--- | ----: | ----: |\n'
+  parser.resultObject.coverage.packages[0].package.forEach((p) => {
+    p.classes[0].class.forEach((c) => {
+      if(c['$']['line-rate'] < 1) {
+        newMessage += `| ${escape(c['$'].filename)} | ${c.lines.length} | ${Math.round(parseFloat(c['$']['line-rate']) * 100)} |\n`;
+      }
+    });
+  });
+  return newMessage;
 }
 
 async function run() {
   if (github.context.eventName !== 'pull_request') {
     core.info('Comment only will be created on pull requests!')
-    return
+    return;
   }
   try {
     const file = core.getInput('file');
