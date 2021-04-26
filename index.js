@@ -39,14 +39,14 @@ async function run() {
     }
     let msg = parseIt(file);
     const context = github.context
-    const pullRequestNumber = context.payload.pull_request?.number
+    const pullRequestNumber = context.payload.pull_request ? context.payload.pull_request.number : 0
 
     const octokit = github.getOctokit(githubToken)
 
     // Now decide if we should issue a new comment or edit an old one
     const {data: comments} = await octokit.issues.listComments({
       ...context.repo,
-      issue_number: pullRequestNumber ?? 0
+      issue_number: pullRequestNumber
     })
 
     const comment = comments.find((comment) => {
@@ -67,7 +67,7 @@ async function run() {
     } else {
       await octokit.issues.createComment({
         ...context.repo,
-        issue_number: pullRequestNumber ?? 0,
+        issue_number: pullRequestNumber,
         body: msg
       })
     }
