@@ -1,5 +1,8 @@
 name: 'pytest-cov XML commenter'
 description: 'Parse pytest-cov XML output and comment to pull request'
+branding:
+  icon: alert-octagon
+  color: green
 inputs:
   file:
     description: 'Filename to parse'
